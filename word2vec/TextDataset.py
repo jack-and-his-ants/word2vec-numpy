@@ -31,7 +31,7 @@ class TextDataset():
             end = min(center_index+window_size+1,len(etokens))
             start = max(0,center_index-window_size)
             for context_index in range(start,end):
-                if(center_index!=context_index):
+                if center_index!=context_index:
                     context = etokens[context_index]
                     pairs.append((center,context))
         return pairs
