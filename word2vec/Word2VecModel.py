@@ -14,6 +14,9 @@ class Word2VecModel():
         x = np.clip(value,-15,15)
         return 1/(1+np.exp(-x))
         
+    def change_learning_rate(self, factor=0.1):
+        self.learning_rate /= factor
+        return self.learning_rate
     
 # model = Word2VecModel(10,2)
 # print(model.words_in)

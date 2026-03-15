@@ -15,10 +15,20 @@ class TextDataset():
         return text.split()
     
     def build_vocabulary(self,min_count=1):
-        counts = Counter(self.tokens)
-        vocab = [word for word,count in counts.items() if count>=min_count]
+        counts_dict = Counter(self.tokens)
+
+        vocab = [word for word,count in counts_dict.items() if count>=min_count]
+
         word_to_idx = {word:index for index,word in enumerate(vocab)}
+
         idx_to_word = {index:word for word,index in word_to_idx.items()}
+
+        counts = np.empty(shape=(len(vocab)),dtype=np.int32)
+
+        for word,count in counts_dict.items():
+            if(count>=min_count):
+                counts[word_to_idx[word]] = count
+
         return word_to_idx,idx_to_word,counts
     
     def encode_tokens(self):
