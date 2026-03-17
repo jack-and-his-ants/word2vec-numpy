@@ -41,9 +41,6 @@ WORD2VEC-NUMPY/
 │   ├── example.ipynb
 │   └── notebook.ipynb
 ├── word2vec/
-│   ├── stable_model/
-│   │   ├── model1.npz
-│   │   └── vocab1.pkl
 │   ├── __init__.py
 │   ├── negative_sampler.py
 │   ├── text_dataset.py
