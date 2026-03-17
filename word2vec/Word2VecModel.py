@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 class Word2VecModel():
     def __init__(self, vocab_size,embedding_dim=100,learning_rate=0.01):
@@ -15,7 +14,7 @@ class Word2VecModel():
         return 1/(1+np.exp(-x))
         
     def change_learning_rate(self, factor=0.1):
-        self.learning_rate /= factor
+        self.learning_rate *= factor
         return self.learning_rate
     
     def forward_pass(self,pair):
@@ -26,8 +25,8 @@ class Word2VecModel():
     def compute_loss(self,positive_score,negative_scores):
         loss = np.log(self.sigmoid(positive_score)) + np.sum(np.log(self.sigmoid(-negative_scores)))
         return loss
+    
     def training_step(self,pair,negatives):
-        # (1−σ(score_pos))vo​−i=1∑k​(1−σ(−score_neg[i]))vn​[i]
         # compute scores for positive and negatives
         vector_word_in = self.words_in[pair[0]]
         vector_word_out = self.words_out[pair[1]]
@@ -38,7 +37,7 @@ class Word2VecModel():
         score_neg = vectors_neg @ vector_word_in
 
         # Compute gradients
-        gradient_vector_center = (1-self.sigmoid(score_pos)) * vector_word_out - np.sum(1-self.sigmoid(-score_neg)[:,None]*vectors_neg,axis=0)
+        gradient_vector_center = ((1-self.sigmoid(score_pos)) * vector_word_out - np.sum((1-self.sigmoid(-score_neg))[:,None]*vectors_neg,axis=0))
         gradient_vector_context = (1-self.sigmoid(score_pos)) * vector_word_in
         gradient_neg = -(1 - self.sigmoid(-score_neg))[:, None] * vector_word_in[None, :]
 
@@ -46,7 +45,44 @@ class Word2VecModel():
         self.words_in[pair[0]] += self.learning_rate * gradient_vector_center
 
         self.words_out[pair[1]] += self.learning_rate * gradient_vector_context
+    
+        for i, neg_idx in enumerate(negatives):
+            self.words_out[neg_idx] += self.learning_rate * gradient_neg[i]
 
-        self.words_out[negatives] += self.learning_rate * gradient_neg
+    def save(self, path):
+        np.savez(
+            path,
+            words_in=self.words_in,
+            words_out=self.words_out,
+            embedding_dim=self.embedding_dim,
+            vocab_size=self.vocab_size,
+            learning_rate=self.learning_rate
+        )
+
+    @classmethod
+    def load(cls, path):
+        data = np.load(path)
+        vocab_size = int(data["vocab_size"])
+        embedding_dim = int(data["embedding_dim"])
+        learning_rate = float(data["learning_rate"])
+        model = cls(vocab_size, embedding_dim, learning_rate)
+        model.words_in = data["words_in"]
+        model.words_out = data["words_out"]
+        return model
+    
+    def get_k_closest_neighbours(self, word_index, k):
+
+        v = self.words_in[word_index]
+
+        scores = self.words_in @ v
+
+        norms = np.linalg.norm(self.words_in, axis=1) * np.linalg.norm(v)
+        similarities = scores / norms
+
+        ind = np.argpartition(similarities, -(k+1))[-(k+1):]
+
+        ind = ind[ind != word_index]
+
+        return ind[:k]
 
 
