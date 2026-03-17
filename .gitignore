@@ -1,0 +1,4 @@
+.DS_Store
+/word2vec/stable_model
+/word2vec/__pycache__
+/word2vec/dataset.txt
