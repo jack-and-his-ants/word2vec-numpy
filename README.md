@@ -35,7 +35,7 @@ This project implements:
 - Finding similar words and solving word analogies
 
 ## Project Structure
-
+```txt
 WORD2VEC-NUMPY/
 ├── notebooks/
 │   ├── example.ipynb
@@ -53,7 +53,7 @@ WORD2VEC-NUMPY/
 ├── README.md
 ├── requirements.txt
 └── train.py
-
+```
 ## Dataset
 
 The training script expects a plain text file at `word2vec/dataset.txt`.  
