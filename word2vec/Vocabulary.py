@@ -5,6 +5,7 @@ class Vocabulary():
     def __init__(self,word_to_index,index_to_word):
         self.word_to_index = word_to_index
         self.index_to_word = index_to_word
+        
     def get_word_by_index(self, index):
         words= []
         for i in index:
@@ -21,6 +22,7 @@ class Vocabulary():
         }
         with open(path, "wb") as f:
             pickle.dump(vocab_data, f)
+
     def __len__(self):
         return len(self.index_to_word)
         

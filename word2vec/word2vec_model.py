@@ -23,7 +23,7 @@ class Word2VecModel():
         return probability
     
     def compute_loss(self,positive_score,negative_scores):
-        loss = np.log(self.sigmoid(positive_score)) + np.sum(np.log(self.sigmoid(-negative_scores)))
+        loss = (np.log(self.sigmoid(positive_score)) + np.sum(np.log(self.sigmoid(-negative_scores))))/(len(negative_scores)+1)
         return loss
     
     def training_step(self,pair,negatives):
@@ -84,5 +84,35 @@ class Word2VecModel():
         ind = ind[ind != word_index]
 
         return ind[:k]
+    
+    def analogy(self, word_a, word_b, word_c, vocab, k=5):
+        #analogy = word_a - word_b + word_c
+
+        idx_a = vocab.get_index_by_word(word_a.lower())
+        idx_b = vocab.get_index_by_word(word_b.lower())
+        idx_c = vocab.get_index_by_word(word_c.lower())
+
+        v_a = self.words_in[idx_a]
+        v_b = self.words_in[idx_b]
+        v_c = self.words_in[idx_c]
+
+        target = v_a - v_b + v_c
+
+        scores = self.words_in @ target
+        norms = np.linalg.norm(self.words_in, axis=1) * np.linalg.norm(target) + 1e-9
+        similarities = scores / norms
+
+        indices = np.argpartition(similarities, -(k+3))[-(k+3):]
+
+        indices = indices[np.argsort(similarities[indices])[::-1]]
+
+        result = []
+        for idx in indices:
+            if idx not in [idx_a, idx_b, idx_c]:
+                result.append(vocab.get_word_by_index([idx])[0])
+            if len(result) == k:
+                break
+
+        return result
 
 

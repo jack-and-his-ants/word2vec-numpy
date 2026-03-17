@@ -1,6 +1,6 @@
 import re
 from collections import Counter
-from Vocabulary import Vocabulary
+from word2vec import Vocabulary
 import numpy as np
 
 class TextDataset():
@@ -58,14 +58,3 @@ class TextDataset():
         return self.vocabulary.get_index_by_word(word)
 
     
-
-
-if __name__ == "__main__":
-    data = TextDataset("one, two, three, four, five")
-    print(data.vocab_size)
-    print(data.tokens)
-    print(data.encoded_tokens)
-    print(type(data.encoded_tokens))
-    pairs = data.generate_pairs(2)
-    for center,context in pairs:
-        print(data.get_word_by_idx(center),data.get_word_by_idx(context))
