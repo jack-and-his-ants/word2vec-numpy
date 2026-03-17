@@ -1,6 +1,5 @@
 import pickle
 
-
 class Vocabulary():
     def __init__(self,word_to_index,index_to_word):
         self.word_to_index = word_to_index
@@ -31,4 +30,4 @@ class Vocabulary():
         with open(path, "rb") as f:
             vocab_data = pickle.load(f)
         vocab = cls(vocab_data["word_to_index"],vocab_data['index_to_word'])
-        return vocab
+        return vocab 
